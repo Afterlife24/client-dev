@@ -531,12 +531,19 @@ const App = () => {
       return parseInt(order.tableNumber) === 0;
     }
     if (menuOption === "All Orders") {
-      return true; // Show all orders
+      return selectedTable
+        ? parseInt(order.tableNumber) === selectedTable
+        : true; // Filter by selected table if a table is selected
     }
     if (menuOption === "Undelivered Orders") {
-      return !order.isDelivered; // Only undelivered orders
+      return (
+        !order.isDelivered &&
+        (selectedTable
+          ? parseInt(order.tableNumber) === selectedTable
+          : true) // Filter by selected table if a table is selected
+      );
     }
-    // For table-specific orders
+    // For other specific cases
     return parseInt(order.tableNumber) === selectedTable;
   });
 
