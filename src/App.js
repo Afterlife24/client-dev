@@ -525,131 +525,161 @@ const App = () => {
   // };
 
   const renderOrders = () => {
-    const filteredOrders = filterOrdersByDate().filter(
-      (order) =>
-        (menuOption === "All Orders" || !order.isDelivered) &&
-        (menuOption === "Tap and Collect"
-          ? parseInt(order.tableNumber) === 0
-          : parseInt(order.tableNumber) === selectedTable)
-    );
- 
-    return (
-      <table className="order-table">
-        <thead>
-          <tr>
-            {menuOption === "Tap and Collect" && <th>Email</th>}
-            {menuOption === "Tap and Collect" && <th>Token ID</th>}
-            <th>Dish</th>
-            <th>Quantity</th>
-            <th>Time</th>
-            <th>Date</th>
-            <th>Status</th>
-            {menuOption === "Tap and Collect" && <th>Expected Time</th>}
-            {menuOption === "Tap and Collect" && <th>Send</th>}
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.map((order) => {
-            const date = new Date(order.createdAt);
-            const isButtonDisabled = sessionStorage.getItem(`buttonDisabled-${order._id}`) === "true";
-            const stampedExpectedTime = sessionStorage.getItem(`expectedTime-${order._id}`) || order.expectedTime;
- 
-            return (
-              <>
-                {order.dishes.map((dish, idx) => (
-                  <tr key={`${order._id}-${idx}`}>
-                    {idx === 0 && menuOption === "Tap and Collect" && (
-                      <>
-                        <td rowSpan={order.dishes.length} className="bold-text">
-                          {order.email || "N/A"}
-                        </td>
-                        <td rowSpan={order.dishes.length} className="bold-text">
-                          {order.tokenId || "N/A"}
-                        </td>
-                      </>
-                    )}
-                    <td>{dish.name}</td>
-                    <td>{dish.quantity}</td>
-                    {idx === 0 && (
-                      <>
-                        <td rowSpan={order.dishes.length}>
-                          {date.toLocaleTimeString()}
-                        </td>
-                        <td rowSpan={order.dishes.length}>
-                          {date.toLocaleDateString()}
-                        </td>
-                        <td rowSpan={order.dishes.length}>
-  <span className={`status ${order.isDelivered ? "delivered" : "pending"}`}>
-    {order.isDelivered ? "Delivered" : "Pending"}
-  </span>
-</td>
-{menuOption === "Tap and Collect" && (
-  <>
-    <td rowSpan={order.dishes.length}>
-      {stampedExpectedTime ? (
-        <span className="expected-time">{stampedExpectedTime}</span>
-      ) : (
-        <select
-          className="select-expected-time"
-          defaultValue=""
-          onChange={(e) => {
-            const selectedTime = e.target.value;
-            sessionStorage.setItem(`expectedTime-${order._id}`, selectedTime);
-            order.expectedTime = selectedTime;
-            setOrders([...orders]);
-          }}
-          disabled={isButtonDisabled}
-        >
-          <option value="" disabled>
-            Select Time
-          </option>
-          <option value="10 min">10 min</option>
-          <option value="20 min">20 min</option>
-          <option value="30 min">30 min</option>
-          <option value="1 hr">1 hr</option>
-        </select>
-      )}
-    </td>
-    <td rowSpan={order.dishes.length}>
-      <button
-        className="send-button"
-        onClick={() =>
-          handleSendTimeDetails(order.email, stampedExpectedTime || "", order._id)
-        }
-        disabled={isButtonDisabled || !stampedExpectedTime}
-      >
-        {isButtonDisabled ? "Sent" : "Send"}
-      </button>
-    </td>
-  </>
-)}
+  const filteredOrders = filterOrdersByDate().filter((order) => {
+    if (menuOption === "Tap and Collect") {
+      // Include all Tap and Collect orders regardless of delivery status
+      return parseInt(order.tableNumber) === 0;
+    }
+    if (menuOption === "All Orders") {
+      return true; // Show all orders
+    }
+    if (menuOption === "Undelivered Orders") {
+      return !order.isDelivered; // Only undelivered orders
+    }
+    // For table-specific orders
+    return parseInt(order.tableNumber) === selectedTable;
+  });
 
-                        <td rowSpan={order.dishes.length}>
-                          {!order.isDelivered && (
+  return (
+    <table className="order-table">
+      <thead>
+        <tr>
+          {menuOption === "Tap and Collect" && <th>Email</th>}
+          {menuOption === "Tap and Collect" && <th>Token ID</th>}
+          <th>Dish</th>
+          <th>Quantity</th>
+          <th>Time</th>
+          <th>Date</th>
+          <th>Status</th>
+          {menuOption === "Tap and Collect" && <th>Expected Time</th>}
+          {menuOption === "Tap and Collect" && <th>Send</th>}
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredOrders.map((order) => {
+          const date = new Date(order.createdAt);
+          const isButtonDisabled =
+            sessionStorage.getItem(`buttonDisabled-${order._id}`) === "true";
+          const stampedExpectedTime =
+            sessionStorage.getItem(`expectedTime-${order._id}`) ||
+            order.expectedTime;
+
+          return (
+            <>
+              {order.dishes.map((dish, idx) => (
+                <tr key={`${order._id}-${idx}`}>
+                  {idx === 0 && menuOption === "Tap and Collect" && (
+                    <>
+                      <td rowSpan={order.dishes.length} className="bold-text">
+                        {order.email || "N/A"}
+                      </td>
+                      <td rowSpan={order.dishes.length} className="bold-text">
+                        {order.tokenId || "N/A"}
+                      </td>
+                    </>
+                  )}
+                  <td>{dish.name}</td>
+                  <td>{dish.quantity}</td>
+                  {idx === 0 && (
+                    <>
+                      <td rowSpan={order.dishes.length}>
+                        {date.toLocaleTimeString()}
+                      </td>
+                      <td rowSpan={order.dishes.length}>
+                        {date.toLocaleDateString()}
+                      </td>
+                      <td rowSpan={order.dishes.length}>
+                        <span
+                          className={`status ${
+                            order.isDelivered ? "delivered" : "pending"
+                          }`}
+                        >
+                          {order.isDelivered ? "Delivered" : "Pending"}
+                        </span>
+                      </td>
+                      {menuOption === "Tap and Collect" && (
+                        <>
+                          <td rowSpan={order.dishes.length}>
+                            {stampedExpectedTime ? (
+                              <span className="expected-time">
+                                {stampedExpectedTime}
+                              </span>
+                            ) : (
+                              <select
+                                className="select-expected-time"
+                                defaultValue=""
+                                onChange={(e) => {
+                                  const selectedTime = e.target.value;
+                                  sessionStorage.setItem(
+                                    `expectedTime-${order._id}`,
+                                    selectedTime
+                                  );
+                                  order.expectedTime = selectedTime;
+                                  setOrders([...orders]);
+                                }}
+                                disabled={
+                                  isButtonDisabled || order.isDelivered
+                                }
+                              >
+                                <option value="" disabled>
+                                  Select Time
+                                </option>
+                                <option value="10 min">10 min</option>
+                                <option value="20 min">20 min</option>
+                                <option value="30 min">30 min</option>
+                                <option value="1 hr">1 hr</option>
+                              </select>
+                            )}
+                          </td>
+                          <td rowSpan={order.dishes.length}>
                             <button
-                              className={`mark-delivered ${
-                                order.isDelivered ? "delivered" : "pending"
-                              }`}
-                              onClick={() => handleMarkAsDelivered(order._id)}
+                              className="send-button"
+                              onClick={() =>
+                                handleSendTimeDetails(
+                                  order.email,
+                                  stampedExpectedTime || "",
+                                  order._id
+                                )
+                              }
+                              disabled={
+                                isButtonDisabled ||
+                                !stampedExpectedTime ||
+                                order.isDelivered
+                              }
                             >
-                              {order.isDelivered
-                                ? "Delivered"
-                                : "Mark as Delivered"}
+                              {isButtonDisabled || order.isDelivered
+                                ? "Sent"
+                                : "Send"}
                             </button>
-                          )}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  };
+                          </td>
+                        </>
+                      )}
+                      <td rowSpan={order.dishes.length}>
+                        <button
+                          className={`mark-delivered ${
+                            order.isDelivered ? "delivered" : "pending"
+                          }`}
+                          onClick={() => handleMarkAsDelivered(order._id)}
+                          disabled={order.isDelivered}
+                        >
+                          {order.isDelivered
+                            ? "Delivered"
+                            : "Mark as Delivered"}
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+};
+
  
  
  
