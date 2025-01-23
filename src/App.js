@@ -391,7 +391,7 @@ const App = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch(`http://dev-server.gofastapi.com/getReservations`);
+      const response = await fetch(`https://dev-server.gofastapi.com/getReservations`);
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
       setReservations(data.reservations);
@@ -444,7 +444,7 @@ const App = () => {
 
   const handleMarkAsDelivered = async (orderId) => {
     try {
-      const response = await fetch(`http://dev-server.gofastapi.com/markAsDelivered`, {
+      const response = await fetch(`https://dev-server.gofastapi.com/markAsDelivered`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -486,7 +486,7 @@ const App = () => {
     }
  
     try {
-      const response = await fetch("http://dev-server.gofastapi.com/timeDetails", {
+      const response = await fetch("https://dev-server.gofastapi.com/timeDetails", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
