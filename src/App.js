@@ -580,50 +580,51 @@ const App = () => {
                           {date.toLocaleDateString()}
                         </td>
                         <td rowSpan={order.dishes.length}>
-                          {order.isDelivered ? "Delivered" : "Pending"}
-                        </td>
-                        {menuOption === "Tap and Collect" && (
-                          <>
-                            <td rowSpan={order.dishes.length}>
-                              {stampedExpectedTime || (
-                                <select
-                                  defaultValue=""
-                                  onChange={(e) => {
-                                    const selectedTime = e.target.value;
-                                    sessionStorage.setItem(`expectedTime-${order._id}`, selectedTime);
-                                    order.expectedTime = selectedTime;
-                                    setOrders([...orders]);
-                                  }}
-                                  disabled={isButtonDisabled}
-                                >
-                                  <option value="" disabled>
-                                    Select Time
-                                  </option>
-                                  <option value="10 min">10 min</option>
-                                  <option value="20 min">20 min</option>
-                                  <option value="30 min">30 min</option>
-                                  <option value="1 hr">1 hr</option>
-                                </select>
-                              )}
-                            </td>
-                            <td rowSpan={order.dishes.length}>
-                              <button
-                                onClick={() =>
-                                  handleSendTimeDetails(
-                                    order.email,
-                                    stampedExpectedTime || "",
-                                    order._id
-                                  )
-                                }
-                                disabled={
-                                  isButtonDisabled || !stampedExpectedTime
-                                }
-                              >
-                                {isButtonDisabled ? "Sent" : "Send"}
-                              </button>
-                            </td>
-                          </>
-                        )}
+  <span className={`status ${order.isDelivered ? "delivered" : "pending"}`}>
+    {order.isDelivered ? "Delivered" : "Pending"}
+  </span>
+</td>
+{menuOption === "Tap and Collect" && (
+  <>
+    <td rowSpan={order.dishes.length}>
+      {stampedExpectedTime ? (
+        <span className="expected-time">{stampedExpectedTime}</span>
+      ) : (
+        <select
+          className="select-expected-time"
+          defaultValue=""
+          onChange={(e) => {
+            const selectedTime = e.target.value;
+            sessionStorage.setItem(`expectedTime-${order._id}`, selectedTime);
+            order.expectedTime = selectedTime;
+            setOrders([...orders]);
+          }}
+          disabled={isButtonDisabled}
+        >
+          <option value="" disabled>
+            Select Time
+          </option>
+          <option value="10 min">10 min</option>
+          <option value="20 min">20 min</option>
+          <option value="30 min">30 min</option>
+          <option value="1 hr">1 hr</option>
+        </select>
+      )}
+    </td>
+    <td rowSpan={order.dishes.length}>
+      <button
+        className="send-button"
+        onClick={() =>
+          handleSendTimeDetails(order.email, stampedExpectedTime || "", order._id)
+        }
+        disabled={isButtonDisabled || !stampedExpectedTime}
+      >
+        {isButtonDisabled ? "Sent" : "Send"}
+      </button>
+    </td>
+  </>
+)}
+
                         <td rowSpan={order.dishes.length}>
                           {!order.isDelivered && (
                             <button
