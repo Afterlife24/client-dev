@@ -198,34 +198,98 @@ p.error {
 /* Reservations Section */
 .reservations-section {
   width: 100%;
-  margin: 0;
-  padding: 0;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f6f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Reservations Table */
 .reservations-table {
   width: 100%;
   border-collapse: collapse;
   margin: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.reservations-table th,
-.reservations-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
+/* Table Header */
 .reservations-table th {
+  padding: 15px;
+  border: 1px solid #ddd;
   background-color: #2c3e50;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  font-weight: bold;
 }
 
+/* Table Data Cells */
+.reservations-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  transition: background-color 0.3s ease;
+}
+
+/* Odd rows with alternating background */
 .reservations-table tr:nth-child(odd) {
   background-color: #f9fafc;
 }
 
+/* Hover effect for rows */
 .reservations-table tr:hover {
-  background-color: #eaeaea;
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+/* Add hover effect for table cells */
+.reservations-table td:hover {
+  background-color: #f2f2f2;
+}
+
+/* Table Border */
+.reservations-table {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Add subtle animation for table rows */
+@keyframes rowHover {
+  0% {
+    background-color: #fff;
+  }
+
+  100% {
+    background-color: #eaeaea;
+  }
+}
+
+.reservations-table tr:hover {
+  animation: rowHover 0.3s ease-in-out;
+}
+
+/* Header and Data Text Styling */
+.reservations-table th,
+.reservations-table td {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+
+  .reservations-table th,
+  .reservations-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
 }
 
 /* Responsive Design */
